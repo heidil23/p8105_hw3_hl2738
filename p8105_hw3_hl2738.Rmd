@@ -73,3 +73,33 @@ instacart %>%
     y = "Number of products")
 ```
 
+#### Table of three most popular items
+Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
+
+```{r}
+instacart %>% 
+  filter(
+    aisle == "baking ingredients" |
+      aisle == "dog food care" |
+      aisle == "packaged vegetables fruits") %>%
+  group_by(product_name) %>% 
+  mutate(
+    product_count = n()) %>%
+  select(aisle, product_name, product_count) %>% 
+  distinct() %>% 
+  group_by(aisle) %>%
+  slice_max(product_count, n = 3) %>% 
+  mutate(
+    Rank = order(product_count, decreasing = TRUE)
+  ) %>%
+  unite("product", product_name, product_count, sep = ": ") %>% 
+  mutate(
+    aisle = str_to_title(aisle)
+  ) %>% 
+  pivot_wider(
+    names_from = "aisle",
+    values_from = "product"
+    ) %>% 
+  knitr::kable(format = "simple")
+```
+
