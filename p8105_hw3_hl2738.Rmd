@@ -11,8 +11,8 @@ library(ggplot2)
 
 knitr::opts_chunk$set(
   fig.width = 6,
-  fig.asp = .6,
-  out.width = "90%"
+  fig.asp = 1.0,
+  out.width = "100%"
 )
 
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
@@ -40,9 +40,9 @@ Next, we will summarize the dataset.
 
 The Instacart dataset provides detailed information on grocery orders in 2017. The dataset has `r ncol(instacart)` variables, and it describes `r nrow(instacart)` products from `r length(unique(pull(instacart, user_id)))` unique users. `r round(sum(pull(instacart, reordered))/nrow(instacart)*100, digits = 2)`% products had been ordered by the user in the past. The median time since the prior order for each customer was `r median(pull(instacart, "days_since_prior_order"))` (IQR `r quantile(pull(instacart, "days_since_prior_order"), 0.25)`, `r quantile(pull(instacart, "days_since_prior_order"), 0.75)`) days. There were `r length(unique(pull(instacart, product_name)))` unique products ordered from `r length(unique(pull(instacart, aisle_id)))` different aisles.
 
-#### Specifics of the Instacart dataset
+### Specifics of the Instacart dataset
 
-How many aisles are there, and which aisles are the most items ordered from?
+#### How many aisles are there, and which aisles are the most items ordered from?
 
 There are `r length(unique(pull(instacart, aisle_id)))` aisles, and the most items are ordered from aisle. Using the following code chunk, we can determine that the most items are ordered from the aisle fresh vegetables, fresh fruits, packaged vegetables, yogurt, and packaged cheese.
 
@@ -55,4 +55,21 @@ instacart %>%
   slice_max(aisle_count, n = 5)
 ```
 
+#### Plot showing the number of items ordered in each aisle
+
+```{r}
+instacart %>% 
+  group_by(aisle) %>% 
+  summarize(
+    aisle_count = n()
+  ) %>% 
+  filter(aisle_count >10000) %>% 
+  ggplot(aes(x = reorder(aisle, aisle_count), y = aisle_count)) +
+  geom_col(width = 0.7) +
+  coord_flip() + 
+  labs(
+    title = "Number of products ordered per aisle",
+    x = "Aisle name",
+    y = "Number of products")
+```
 
