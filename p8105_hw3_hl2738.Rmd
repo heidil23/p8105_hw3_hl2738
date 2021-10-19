@@ -100,6 +100,38 @@ instacart %>%
     names_from = "aisle",
     values_from = "product"
     ) %>% 
-  knitr::kable(format = "simple")
+  knitr::kable(format = "simple",
+               caption = "Top three most popular items by aisle")
+```
+
+#### Pink Lady Apples and Coffee Ice Cream
+
+The following is a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week.
+
+```{r}
+instacart %>% 
+  filter(
+    product_name == "Pink Lady Apples" |
+    product_name == "Coffee Ice Cream") %>% 
+  group_by(product_name, order_dow) %>% 
+  summarize(
+    mean_hour = round(mean(order_hour_of_day), digits = 1)
+  ) %>% 
+  mutate(Day = case_when(
+    order_dow == 0 ~ "Sunday",
+    order_dow == 1 ~ "Monday",
+    order_dow == 2 ~ "Tuesday",
+    order_dow == 3 ~ "Wednesday",
+    order_dow == 4 ~ "Thursday",
+    order_dow == 5 ~ "Friday",
+    order_dow == 6 ~ "Saturday")
+  ) %>% 
+  pivot_wider(
+    names_from = "product_name",
+    values_from = "mean_hour"
+  ) %>% 
+  select(-order_dow) %>% 
+    knitr::kable(format = "simple",
+                 caption = "Mean hour for ordering products by day of the week")
 ```
 
