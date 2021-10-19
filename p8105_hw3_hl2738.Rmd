@@ -135,3 +135,29 @@ instacart %>%
                  caption = "Mean hour for ordering products by day of the week")
 ```
 
+## Problem 2
+
+#### Load and clean the BRFSS dataset
+
+First we will load the BRFSS dataset from the p8105.datasets package.
+
+```{r}
+data("brfss_smart2010")
+```
+
+Next we will clean the data.
+
+```{r}
+brfss = brfss_smart2010 %>% 
+  janitor::clean_names() %>% 
+  filter(topic == "Overall Health") %>% 
+  filter(response %in% c("Poor", "Fair", "Good", "Very Good", "Excellent")) %>%
+  mutate(
+    response = factor(response, levels = c("Poor", "Fair", "Good", "Very Good", "Excellent"))
+  )
+```
+
+
+
+
+
