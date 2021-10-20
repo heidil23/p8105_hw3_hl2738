@@ -235,19 +235,36 @@ accel = read_csv("./data/accel_data.csv") %>%
       day == "Saturday" ~ "weekend")
   ) %>% 
   pivot_longer(
-    activity_1:bdi_score_12m,
-    names_to = "visit",
-    names_prefix = "bdi_score_",
-    values_to = "bdi"
+    activity_1:activity_1440,
+    names_to = "activity",
+    names_prefix = "activity_",
+    values_to = "counts"
   )
-      
-      
-      
 ```
 
 Describe the resulting dataset (e.g. what variables exist, how many observations, etc).
 
 Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate across minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
 
+```{r}
+accel %>% 
+  group_by(day_id) %>% 
+  mutate(total_activity = sum(counts)) %>% 
+  ungroup() %>% 
+  select(week, day, total_activity) %>% 
+  distinct() %>% 
+  pivot_wider(
+    names_from = "day",
+    values_from = "total_activity"
+  )
+```
+
 Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
+
+```{r}
+accel %>% 
+  ggplot(aes(x = day_id, y = counts, color = day, shape = day_type)) + 
+  geom_point()
+```
+
 
