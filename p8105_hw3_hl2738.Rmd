@@ -28,6 +28,8 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Problem 1
 
+#### Load the Instacart dataset
+
 First we will load in the Instacart data from the p8105.datasets library.
 
 ```{r}
@@ -44,7 +46,7 @@ The Instacart dataset provides detailed information on grocery orders in 2017. T
 
 #### How many aisles are there, and which aisles are the most items ordered from?
 
-There are `r length(unique(pull(instacart, aisle_id)))` aisles, and the most items are ordered from aisle. Using the following code chunk, we can determine that the most items are ordered from the aisle fresh vegetables, fresh fruits, packaged vegetables, yogurt, and packaged cheese.
+There are `r length(unique(pull(instacart, aisle_id)))` aisles. Using the following code chunk, we can determine that the most items are ordered from the aisles fresh vegetables, fresh fruits, packaged vegetables, yogurt, and packaged cheese.
 
 ```{r}
 instacart %>% 
@@ -56,6 +58,8 @@ instacart %>%
 ```
 
 #### Plot showing the number of items ordered in each aisle
+
+Next we will make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered.
 
 ```{r}
 instacart %>% 
@@ -73,9 +77,10 @@ instacart %>%
     y = "Number of products")
 ```
 
-#### Table of three most popular items
-Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
+This plot again demonstrates that the most items are ordered from the aisles mentioned above.
 
+#### Table of three most popular items
+Now we will make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Included in the table is the number of times each item is ordered. 
 ```{r}
 instacart %>% 
   filter(
@@ -101,8 +106,10 @@ instacart %>%
     values_from = "product"
     ) %>% 
   knitr::kable(format = "simple",
-               caption = "Top three most popular items by aisle")
+               caption = "Top three most popular items by aisle with number of items ordered")
 ```
+
+We can see that the top items ordered are light brown sugar for baking ingredients, snack sticks for dog food care, and organic baby spinach for packaged vegetables and fruits.
 
 #### Pink Lady Apples and Coffee Ice Cream
 
@@ -135,9 +142,11 @@ instacart %>%
                  caption = "Mean hour for ordering products by day of the week")
 ```
 
+We can see that overall, on average, coffee ice cream is ordered later in the day than Pink Lady apples.
+
 ## Problem 2
 
-#### Load and clean the BRFSS dataset
+### Load and clean the BRFSS dataset
 
 First we will load the BRFSS dataset from the p8105.datasets package.
 
@@ -145,7 +154,7 @@ First we will load the BRFSS dataset from the p8105.datasets package.
 data("brfss_smart2010")
 ```
 
-Next we will clean the data.
+Next we will clean the data. This includes limiting the data set to the "Overall Health" topic, including only responses from “Excellent” to “Poor," and organizing responses as a factor taking levels ordered from “Poor” to “Excellent.”
 
 ```{r}
 brfss = brfss_smart2010 %>% 
@@ -163,9 +172,9 @@ brfss = brfss_smart2010 %>%
   )
 ```
 
-#### BRFSS dataset questions
+### BRFSS dataset questions
 
-###### Observed at 7 or more locations
+#### Observed at 7 or more locations
 In 2002, which states were observed at 7 or more locations? What about in 2010?
 
 Based on the code chunk below, we can see that the there were 6 states (CT, FL, MA, NC, NJ, and PA) that were observed at 7 or more locations in 2002. By comparison, in 2010, there 14 states (CA, CO, FL, MA, MD, NC, NE, NJ, NY, OH, PA, SC, TX, and WA) that were observed at 7 or more locations.
@@ -188,8 +197,8 @@ brfss %>%
   filter(count >= 7)
 ```
 
-###### Excellent responses
-Construct a dataset that is limited to *Excellent* responses, and contains year, state, and a variable that averages the data_value across locations within a state. Make a “spaghetti” plot of this average value over time within a state.
+#### Excellent responses
+We will now construct a dataset that is limited to *Excellent* responses and contains year, state, and a variable that averages the data_value across locations within a state. We will then make a “spaghetti” plot of this average value over time within a state. From the spaghetti plot, we can see that overall, the average data value tended to decrease over time from 2002 to 2010.
 
 ```{r}
 excellent = brfss %>% 
@@ -203,33 +212,37 @@ excellent = brfss %>%
 excellent %>% 
   ggplot(aes(x = year, y = mean_data_value, color = state)) +
   geom_point(size = .2) + 
-  geom_line(aes(group = state), alpha = .3)
+  geom_line(aes(group = state), alpha = .3) +
+  labs(
+    title = "Average data value over time for Excellent responses",
+    x = "Year",
+    y = "Mean data value")
 ```
 
-###### Distribution of responses in 2006 and 2010 in NY state
-Make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
+#### Distribution of responses in 2006 and 2010 in NY state
+We will now filter the data to include the years 2006 and 2010 only and limit the dataset to NY state. The box plot below shows the distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
 
 ```{r}
 brfss %>% 
   filter(
     year == c("2006", "2010"),
     state == "NY") %>% 
-  ggplot(aes(x = data_value, fill = response)) +
-  geom_density() + 
+  ggplot(aes(x = response, y = data_value, color = response)) +
+  geom_boxplot() + 
   facet_grid(.~year) +
   labs(
     title = "Distribution of data values by response in NY",
-    x = "Data value",
-    y = "Density")
+    x = "Response",
+    y = "Data Value")
 ```
 
-This density plot shows that a response of "Poor" correlated with the lowest data values, both in 2006 and 2010. A response of "Fair" similarly correlated with lower data values, though not quite as low as for "Poor." In 2006, there was overlap between the data values for "Good," "Very good," and "Excellent responses. In 2010, the highest data values coresponsed with "Good" and "Very good" responses.
+These box plots plot show that a response of "Poor" correlated with the lowest data values, both in 2006 and 2010. A response of "Fair" similarly correlated with lower data values, though not quite as low as for "Poor." In 2006, there was overlap between the data values for "Good," "Very good," and "Excellent" responses. In 2010, the highest data values coresponded with "Good" and "Very good" responses, whereas data values for "Excellent" were slightly lower and were more similar to the values in 2006.
 
 ## Problem 3
-This problem uses five weeks of accelerometer data collected on a 63 year-old male with BMI 25, who was admitted to the Advanced Cardiac Care Center of Columbia University Medical Center and diagnosed with congestive heart failure (CHF). The variables activity.* are the activity counts for each minute of a 24-hour day starting at midnight.
+This problem uses five weeks of accelerometer data collected on a 63 year-old male with BMI 25, who was admitted to the Advanced Cardiac Care Center of Columbia University Medical Center and diagnosed with congestive heart failure (CHF). The variables include the activity counts for each minute of a 24-hour day starting at midnight.
 
 #### Load and tidy the accelerometer data
-First we will load, tidy, and wrangle the accelerometer data.
+First we will load, tidy, and wrangle the accelerometer data. We will add a variable specifying "weekday" vs. "weekend," and we will use pivot_longer to create a variable for minute of the day and a separate variable for the activity counts.
 
 ```{r}
 accel = read_csv("./data/accel_data.csv") %>% 
@@ -255,12 +268,11 @@ accel = read_csv("./data/accel_data.csv") %>%
 ```
 
 #### Summary of the dataset
-Describe the resulting dataset (e.g. what variables exist, how many observations, etc).
 
-The tidied accelerometer dataset has `r ncol(accel)` variables and `r nrow(accel)` observations. It includes data from week `r min(pull(accel, week))` to week `r max(pull(accel, week))` of the study. The dataset includes activity counts for each minute of 24-hour day. The mean activity count per minute during the study period was `r mean(pull(accel, counts))`. 
+The tidied accelerometer dataset has `r ncol(accel)` variables and `r nrow(accel)` observations. It includes data from week `r min(pull(accel, week))` to week `r max(pull(accel, week))` of the study. The dataset includes activity counts for each minute of of the day, ranging from `r min(pull(accel, activity))` to `r max(pull(accel, activity))`. The mean activity count per minute during the study period was `r round(mean(pull(accel, counts)), digits = 2)`. 
 
 #### Total activity per day
-Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate across minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
+Traditional analyses of accelerometer data focus on the total activity over the day. Using your the tidied dataset, we will aggregate the data across minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
 
 ```{r}
 accel %>% 
@@ -272,11 +284,16 @@ accel %>%
   pivot_wider(
     names_from = "day",
     values_from = "total_activity"
-  )
+  ) %>% 
+  knitr::kable()
 ```
 
+From this table, we can see that total activity seemed to decrease from week 1 to week 5 on the weekends.
+
 #### 24-hour activity pattern by day
-Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
+Accelerometer data allows the inspection of activity over the course of the day. Next we will make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week.
+
+This first plot shows the individual data points with super-imposed geom_smooth lines.
 
 ```{r}
 accel %>% 
@@ -285,12 +302,28 @@ accel %>%
     activity = activity/60
     ) %>% 
   ggplot(aes(x = activity, y = counts, color = day)) + 
-  geom_point() +
+  geom_point(alpha = .5) +
+  geom_smooth(aes(group = day),se = FALSE) +
   labs(
     title = "24-hour activity pattern by day of the week",
     x = "Hour",
     y = "Activity")
 ```
 
-Based on this plot, we can see that there are two peaks of activity during the day, around 10 am and 8 pm. The most activity tended to occur on the weekends and on Fridays.
+This second plot shows only the geom_smooth function and more clearly depicts the activity trends over the course of a day.
+```{r}
+accel %>% 
+  mutate(
+    activity = as.numeric(as.character(activity)),
+    activity = activity/60
+    ) %>% 
+  ggplot(aes(x = activity, y = counts, color = day)) + 
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "24-hour activity pattern by day of the week",
+    x = "Hour",
+    y = "Activity")
+```
+
+Based on both plots, we can see that there are two peaks of activity. On Sundays, it appears that the patient was most active, or perhaps had scheduled exercise, around 10 am. The second activity peak occurred on Fridays, around 8-9 pm. The patient had the lowest activity on Saturdays.
 
