@@ -11,7 +11,7 @@ library(ggplot2)
 
 knitr::opts_chunk$set(
   fig.width = 6,
-  fig.asp = 1.0,
+  fig.asp = .6,
   out.width = "90%"
 )
 
@@ -198,7 +198,7 @@ brfss %>%
 ```
 
 #### Excellent responses
-We will now construct a dataset that is limited to *Excellent* responses and contains year, state, and a variable that averages the data_value across locations within a state. We will then make a “spaghetti” plot of this average value over time within a state. From the spaghetti plot, we can see that overall, the average data value tended to decrease over time from 2002 to 2010.
+We will now construct a dataset that is limited to *Excellent* responses and contains year, state, and a variable that averages the data_value across locations within a state. We will then make a “spaghetti” plot of this average value over time within a state.
 
 ```{r}
 excellent = brfss %>% 
@@ -218,6 +218,8 @@ excellent %>%
     x = "Year",
     y = "Mean data value")
 ```
+
+From the spaghetti plot, we can see that overall, the average data value tended to decrease over time from 2002 to 2010.
 
 #### Distribution of responses in 2006 and 2010 in NY state
 We will now filter the data to include the years 2006 and 2010 only and limit the dataset to NY state. The box plot below shows the distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
